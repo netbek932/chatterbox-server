@@ -13,8 +13,12 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 
 var url = require('url');
+var http = require('http');
+let _data = [];
 
 var requestHandler = function(request, response) {
+  console.log('request: ', request)
+  // console.log('request: ', request)
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -30,38 +34,72 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
 
+  var path = 'http://127.0.0.1:3000/classes/messages';
 
-  request.url = 'http://127.0.0.1:3000/classes/messages';
-  var parseUrl = url.parse(request.url);
+  if (!request.url.includes('classes/messages')) {
+    console.log(request.url);
+    console.log(path);
+    response.writeHead(404);
+    response.end();
+  }
 
-  console.log('parseURL: ', parseUrl);
-  console.log('Serving request type ' + request.method + ' for url ' + parseUrl);
+  if (request.method === 'GET' && request.url.includes('classes/messages')) {
+    // The outgoing status.
+    var statusCode = 200;
 
-  // The outgoing status.
-  var statusCode = 200;
+    // See the note below about CORS headers.
+    var headers = defaultCorsHeaders;
 
-  // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
+    // Tell the client we are sending them plain text.
+    //
+    // You will need to change this if you are sending something
+    // other than plain text, like JSON or HTML.
+    headers['Content-Type'] = 'text/plain';
 
-  // Tell the client we are sending them plain text.
-  //
-  // You will need to change this if you are sending something
-  // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+    // .writeHead() writes to the request line and headers of the response,
+    // which includes the status and all headers.
 
-  // .writeHead() writes to the request line and headers of the response,
-  // which includes the status and all headers.
-  // if ()
-  response.writeHead(statusCode, headers);
+    response.writeHead(statusCode, headers);
 
-  // Make sure to always call response.end() - Node may not send
-  // anything back to the client until you do. The string you pass to
-  // response.end() will be the body of the response - i.e. what shows
-  // up in the browser.
-  //
-  // Calling .end "flushes" the response's internal buffer, forcing
-  // node to actually send all the data over to the client.
-  response.end('Hello, World!');
+    // Make sure to always call response.end() - Node may not send
+    // anything back to the client until you do. The string you pass to
+    // response.end() will be the body of the response - i.e. what shows
+    // up in the browser.
+    //
+    // Calling .end "flushes" the response's internal buffer, forcing
+    // node to actually send all the data over to the client.
+    response.end(JSON.stringify(
+      _data
+    ));
+  } else if (request.method === 'POST' && request.url.includes('classes/messages')) {
+    var statusCode = 201;
+
+
+
+    // console.log('Status Code:', statusCode);
+
+    request.on('data', (chunk) => {
+      console.log('chunk: ', chunk)
+      _data.push(JSON.parse(chunk));
+    });
+
+    // response.on('end', () => {
+    //   console.log('Body: ', JSON.parse(_data));
+    // });
+
+
+    response.writeHead(statusCode);
+    // console.log('DATA HERE:', _data);
+    response.end(JSON.stringify(_data));
+  }
+
+
+  // request.url = 'http://127.0.0.1:3000/classes/messages';
+  // var parseUrl = url.parse(`${options.hostname}${options.path}`);
+//
+  // console.log('parseURL: ', parseUrl);
+  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
