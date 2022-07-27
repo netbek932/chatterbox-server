@@ -12,6 +12,8 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var url = require('url');
+
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -27,7 +29,13 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+
+
+  request.url = 'http://127.0.0.1:3000/classes/messages';
+  var parseUrl = url.parse(request.url);
+
+  console.log('parseURL: ', parseUrl);
+  console.log('Serving request type ' + request.method + ' for url ' + parseUrl);
 
   // The outgoing status.
   var statusCode = 200;
@@ -43,6 +51,7 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
+  // if ()
   response.writeHead(statusCode, headers);
 
   // Make sure to always call response.end() - Node may not send
