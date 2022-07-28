@@ -91,4 +91,28 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
+  // additional test cases
+  it('should update data in a server with PUT requests', function() {
+    var stubMsg = {
+      username: 'John',
+      text: 'Coding!'
+    };
+
+    var req = new stubs.request('/classes/messages', 'PUT', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    expect(res._ended).to.equal(true);
+  });
+
+  it('should delete data in a server with DELETE requests', function() {
+
+  });
+
+  it('should ....OPTIONS', function() {
+
+  });
+
 });

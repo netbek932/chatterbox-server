@@ -74,30 +74,42 @@ var requestHandler = function(request, response) {
   } else if (request.method === 'POST' && request.url.includes('classes/messages')) {
     var statusCode = 201;
 
-
-
-    // console.log('Status Code:', statusCode);
-
     request.on('data', (chunk) => {
       console.log('chunk: ', chunk)
       _data.push(JSON.parse(chunk));
     });
 
-    // response.on('end', () => {
-    //   console.log('Body: ', JSON.parse(_data));
-    // });
+    response.writeHead(statusCode);
+    response.end(JSON.stringify(_data));
+  } else if (request.method === 'PUT' && request.url.includes('classes/messages')) {
+    var statusCode = 200;
 
+    request.on('data', (chunk) => {
+      _.data.username = chunk.username;
+      _.data.text = chunk.text;
+    });
+
+    request({
+      uri: 'http://apiurl.url/1.0/data?token=' + APItoken,
+      method: 'PUT',
+      data: [{
+        'content-type': 'application/json',
+        body: JSON.stringify(APIpostObj)
+      }],
+      json: true
+    },
+    function(error, response, body) {
+      if (error) {
+        return console.error('upload failed:', error);
+      }
+      console.log('Server responded with:', body);
+    })
 
     response.writeHead(statusCode);
-    // console.log('DATA HERE:', _data);
     response.end(JSON.stringify(_data));
   }
 
 
-  // request.url = 'http://127.0.0.1:3000/classes/messages';
-  // var parseUrl = url.parse(`${options.hostname}${options.path}`);
-//
-  // console.log('parseURL: ', parseUrl);
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
 };
