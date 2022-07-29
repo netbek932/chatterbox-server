@@ -85,25 +85,27 @@ var requestHandler = function(request, response) {
     var statusCode = 200;
 
     request.on('data', (chunk) => {
-      _.data.username = chunk.username;
-      _.data.text = chunk.text;
+      for (var i = 0; i < _data.length; i++) {
+        var currentData = _data[i];
+        if (currentData['username'] === JSON.parse(chunk)['username']) {
+          currentData['text'] = JSON.parse(chunk)['text'];
+        }
+      }
     });
 
-    request({
-      uri: 'http://apiurl.url/1.0/data?token=' + APItoken,
-      method: 'PUT',
-      data: [{
-        'content-type': 'application/json',
-        body: JSON.stringify(APIpostObj)
-      }],
-      json: true
-    },
-    function(error, response, body) {
-      if (error) {
-        return console.error('upload failed:', error);
+    response.writeHead(statusCode);
+    response.end(JSON.stringify(_data));
+  } else if (request.method === 'DELETE' && request.url.includes('classes/messages')) {
+    var statusCode = 200;
+
+    request.on('data', (chunk) => {
+      for (var i = 0; i < _data.length; i++) {
+        var currentData = _data[i];
+        if (currentData['username'] === JSON.parse(chunk)['username']) {
+          _data.splice(i, 1);
+        }
       }
-      console.log('Server responded with:', body);
-    })
+    });
 
     response.writeHead(statusCode);
     response.end(JSON.stringify(_data));

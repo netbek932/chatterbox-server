@@ -108,11 +108,26 @@ describe('Node Server Request Listener Function', function() {
   });
 
   it('should delete data in a server with DELETE requests', function() {
+    var stubMsg = {
+      username: 'John',
+      text: 'Coding!'
+    };
 
+    var req = new stubs.request('/classes/messages', 'DELETE', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    expect(res._ended).to.equal(true);
   });
 
-  it('should ....OPTIONS', function() {
+  it('should accept only object with POST request', function() {
+    var stubMsg = {
+      username: 'Jono',
+      text: 'Do my bidding!'
+    };
 
+    expect(typeof stubMsg).to.equal('object');
   });
-
 });
