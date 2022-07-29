@@ -16,9 +16,14 @@ var url = require('url');
 var http = require('http');
 let _data = [];
 
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
+};
+
 var requestHandler = function(request, response) {
-  console.log('request: ', request)
-  // console.log('request: ', request)
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -39,7 +44,7 @@ var requestHandler = function(request, response) {
   if (!request.url.includes('classes/messages')) {
     console.log(request.url);
     console.log(path);
-    response.writeHead(404);
+    response.writeHead(404, defaultCorsHeaders);
     response.end();
   }
 
@@ -54,7 +59,7 @@ var requestHandler = function(request, response) {
     //
     // You will need to change this if you are sending something
     // other than plain text, like JSON or HTML.
-    headers['Content-Type'] = 'text/plain';
+    headers['Content-Type'] = 'JSON';
 
     // .writeHead() writes to the request line and headers of the response,
     // which includes the status and all headers.
@@ -79,7 +84,7 @@ var requestHandler = function(request, response) {
       _data.push(JSON.parse(chunk));
     });
 
-    response.writeHead(statusCode);
+    response.writeHead(statusCode, headers);
     response.end(JSON.stringify(_data));
   } else if (request.method === 'PUT' && request.url.includes('classes/messages')) {
     var statusCode = 200;
@@ -93,7 +98,7 @@ var requestHandler = function(request, response) {
       }
     });
 
-    response.writeHead(statusCode);
+    response.writeHead(statusCode, headers);
     response.end(JSON.stringify(_data));
   } else if (request.method === 'DELETE' && request.url.includes('classes/messages')) {
     var statusCode = 200;
@@ -107,8 +112,11 @@ var requestHandler = function(request, response) {
       }
     });
 
-    response.writeHead(statusCode);
+    response.writeHead(statusCode, headers);
     response.end(JSON.stringify(_data));
+  } else if (request.method === 'OPTIONS') {
+    response.writeHead(200, defaultCorsHeaders);
+    response.end();
   }
 
 
@@ -125,11 +133,6 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept, authorization',
-  'access-control-max-age': 10 // Seconds.
-};
+
 
 exports.requestHandler = requestHandler;
