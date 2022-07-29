@@ -44,7 +44,7 @@ var requestHandler = function(request, response) {
   if (!request.url.includes('classes/messages')) {
     console.log(request.url);
     console.log(path);
-    response.writeHead(404, defaultCorsHeaders);
+    response.writeHead(404);
     response.end();
   }
 
@@ -104,14 +104,16 @@ var requestHandler = function(request, response) {
     var statusCode = 200;
 
     request.on('data', (chunk) => {
+console.log('CHUNK', JSON.parse(chunk));
       for (var i = 0; i < _data.length; i++) {
         var currentData = _data[i];
-        if (currentData['username'] === JSON.parse(chunk)['username']) {
+        var parsedChunk = JSON.parse(chunk);
+        if (currentData['username'] === parsedChunk['username']) {
           _data.splice(i, 1);
         }
       }
     });
-
+    console.log('DATA HERE', _data);
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify(_data));
   } else if (request.method === 'OPTIONS') {

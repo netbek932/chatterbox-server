@@ -66,5 +66,40 @@ describe('server', function() {
     });
   });
 
+  it('should respond to PUT requests for /classes/messages', function(done) {
+    var requestParams = {method: 'PUT',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        text: 'Sending PUT request'}
+    };
+    request(requestParams, function(error, response, body) {
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body);
+        expect(messages[0].username).to.equal('Jono');
+        expect(messages[0].text).to.equal('Sending PUT request');
+        done();
+      });
+    });
+  });
+
+  it('should respond to DELETE requests for /classes/messages', function(done) {
+    var requestParams = {method: 'DELETE',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        text: 'Sending PUT request'}
+    };
+    request(requestParams, function(error, response, body) {
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+console.log(body);
+        var messages = JSON.parse(body);
+        expect(messages[0].username).to.equal('Jono');
+        expect(messages[0].text).to.equal('Sending PUT request');
+        done();
+      });
+    });
+  })
+
 
 });
