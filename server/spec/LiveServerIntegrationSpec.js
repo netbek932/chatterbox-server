@@ -66,18 +66,43 @@ describe('server', function() {
     });
   });
 
-  it('should respond to PUT requests for /classes/messages', function(done) {
+  it('should respond to PUT requests to change text for /classes/messages', function(done) {
     var requestParams = {method: 'PUT',
       uri: 'http://127.0.0.1:3000/classes/messages',
       json: {
         username: 'Jono',
-        text: 'Sending PUT request'}
+        text: 'Sending a PUT request'
+      }
     };
     request(requestParams, function(error, response, body) {
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         var messages = JSON.parse(body);
+        console.log('MESSAGES', messages);
         expect(messages[0].username).to.equal('Jono');
-        expect(messages[0].text).to.equal('Sending PUT request');
+        expect(messages[0].text).to.equal('Sending a PUT request');
+        expect(messages[1].username).to.equal('Jono');
+        expect(messages[1].text).to.equal('Sending a PUT request');
+        done();
+      });
+    });
+  });
+
+  it('should response to PUT requests to change username for /classes/messages', function(done) {
+    var requestParams = {method: 'PUT',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'John',
+        text: 'Sending a PUT request'
+      }
+    };
+    request(requestParams, function(error, response, body) {
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body);
+        console.log('MESSAGES', messages);
+        expect(messages[0].username).to.equal('John');
+        expect(messages[0].text).to.equal('Sending a PUT request');
+        expect(messages[1].username).to.equal('John');
+        expect(messages[1].text).to.equal('Sending a PUT request');
         done();
       });
     });
@@ -87,19 +112,18 @@ describe('server', function() {
     var requestParams = {method: 'DELETE',
       uri: 'http://127.0.0.1:3000/classes/messages',
       json: {
-        username: 'Jono',
+        username: 'John',
         text: 'Sending PUT request'}
     };
     request(requestParams, function(error, response, body) {
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
-console.log(body);
+        console.log('BODY', body);
         var messages = JSON.parse(body);
-        expect(messages[0].username).to.equal('Jono');
-        expect(messages[0].text).to.equal('Sending PUT request');
+        expect(messages.length).to.equal(0);
         done();
       });
     });
-  })
+  });
 
 
 });

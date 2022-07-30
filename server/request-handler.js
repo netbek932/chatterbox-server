@@ -94,6 +94,8 @@ var requestHandler = function(request, response) {
         var currentData = _data[i];
         if (currentData['username'] === JSON.parse(chunk)['username']) {
           currentData['text'] = JSON.parse(chunk)['text'];
+        } else if (currentData['text'] === JSON.parse(chunk)['text']) {
+          currentData['username'] = JSON.parse(chunk)['username'];
         }
       }
     });
@@ -104,16 +106,15 @@ var requestHandler = function(request, response) {
     var statusCode = 200;
 
     request.on('data', (chunk) => {
-console.log('CHUNK', JSON.parse(chunk));
       for (var i = 0; i < _data.length; i++) {
         var currentData = _data[i];
         var parsedChunk = JSON.parse(chunk);
         if (currentData['username'] === parsedChunk['username']) {
           _data.splice(i, 1);
+          i--;
         }
       }
     });
-    console.log('DATA HERE', _data);
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify(_data));
   } else if (request.method === 'OPTIONS') {
