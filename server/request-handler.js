@@ -80,7 +80,6 @@ var requestHandler = function(request, response) {
     var statusCode = 201;
 
     request.on('data', (chunk) => {
-      console.log('chunk: ', chunk)
       _data.push(JSON.parse(chunk));
     });
 
